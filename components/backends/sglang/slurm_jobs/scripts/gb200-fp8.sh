@@ -71,7 +71,8 @@ if [ "$mode" = "prefill" ]; then
     if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/prefill_dsr1-0528_in1000out1000_num40000.json"; fi
 
     # --enable-dp-attention \
-    
+    # --enable-dp-lm-head \
+
     DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
     MC_TE_METRIC=true \
     SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 \
@@ -105,7 +106,6 @@ if [ "$mode" = "prefill" ]; then
         --deepep-mode normal \
         --ep-dispatch-algorithm dynamic \
         --moe-dense-tp-size 1 \
-        --enable-dp-lm-head \
         --disable-shared-experts-fusion \
         --ep-num-redundant-experts 32 \
         --eplb-algorithm deepseek \
@@ -125,6 +125,7 @@ elif [ "$mode" = "decode" ]; then
     if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/decode_dsr1-0528_loadgen_in1024out1024_num2000_2p12d.json"; fi
 
     # --enable-dp-attention \
+    # --enable-dp-lm-head \
 
     # GB200 dynamo decode command
     DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
@@ -161,7 +162,6 @@ elif [ "$mode" = "decode" ]; then
         --enable-deepep-moe \
         --deepep-mode low_latency \
         --moe-dense-tp-size 1 \
-        --enable-dp-lm-head \
         --cuda-graph-bs 1 2 4 8 16 24 32 40 48 56 64 80 96 112 128 160 192 224 256 320 384 448 512 \
         --cuda-graph-max-bs 512 \
         --disable-shared-experts-fusion \
