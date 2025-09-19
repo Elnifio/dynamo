@@ -70,6 +70,8 @@ if [ "$mode" = "prefill" ]; then
 
     if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/prefill_dsr1-0528_in1000out1000_num40000.json"; fi
 
+    # --enable-dp-attention \
+    
     DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
     MC_TE_METRIC=true \
     SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 \
@@ -94,7 +96,6 @@ if [ "$mode" = "prefill" ]; then
         --node-rank "$RANK" \
         --tp-size "$TOTAL_GPUS" \
         --dp-size "$TOTAL_GPUS" \
-        --enable-dp-attention \
         --host 0.0.0.0 \
         --decode-log-interval 1000 \
         --max-running-requests 12288 \
@@ -123,6 +124,8 @@ elif [ "$mode" = "decode" ]; then
     command_suffix=""
     if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/decode_dsr1-0528_loadgen_in1024out1024_num2000_2p12d.json"; fi
 
+    # --enable-dp-attention \
+
     # GB200 dynamo decode command
     DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
     SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=512 \
@@ -150,7 +153,6 @@ elif [ "$mode" = "decode" ]; then
         --node-rank "$RANK" \
         --tp-size "$TOTAL_GPUS" \
         --dp-size "$TOTAL_GPUS" \
-        --enable-dp-attention \
         --host 0.0.0.0 \
         --decode-log-interval 1000 \
         --max-running-requests 36864 \
