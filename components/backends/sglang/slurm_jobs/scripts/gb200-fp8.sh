@@ -115,6 +115,7 @@ if [ "$mode" = "prefill" ]; then
         --max-total-tokens 524288 \
         --deepep-config /configs/deepep_config.json \
         --stream-interval 50 \
+        --scheduler-recv-interval 30 \
         --log-level debug ${command_suffix}
 
 elif [ "$mode" = "decode" ]; then
@@ -169,5 +170,6 @@ elif [ "$mode" = "decode" ]; then
         --watchdog-timeout 1000000 \
         --chunked-prefill-size 36864 \
         --stream-interval 50 \
+        --scheduler-recv-interval 30 \
         --mem-fraction-static 0.82 ${command_suffix}
 fi
