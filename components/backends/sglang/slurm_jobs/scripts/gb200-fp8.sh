@@ -71,7 +71,6 @@ if [ "$mode" = "prefill" ]; then
     if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/prefill_dsr1-0528_in1000out1000_num40000.json"; fi
 
     # --enable-dp-attention \
-    # --enable-dp-lm-head \
 
     DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
     MC_TE_METRIC=true \
@@ -116,7 +115,7 @@ if [ "$mode" = "prefill" ]; then
         --max-total-tokens 524288 \
         --deepep-config /configs/deepep_config.json \
         --stream-interval 50 \
-        --scheduler-recv-interval 30 \
+        --enable-dp-lm-head \
         --log-level debug ${command_suffix}
 
 elif [ "$mode" = "decode" ]; then
@@ -125,7 +124,6 @@ elif [ "$mode" = "decode" ]; then
     if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/decode_dsr1-0528_loadgen_in1024out1024_num2000_2p12d.json"; fi
 
     # --enable-dp-attention \
-    # --enable-dp-lm-head \
 
     # GB200 dynamo decode command
     DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
@@ -172,6 +170,6 @@ elif [ "$mode" = "decode" ]; then
         --watchdog-timeout 1000000 \
         --chunked-prefill-size 36864 \
         --stream-interval 50 \
-        --scheduler-recv-interval 30 \
+        --enable-dp-lm-head \
         --mem-fraction-static 0.82 ${command_suffix}
 fi
