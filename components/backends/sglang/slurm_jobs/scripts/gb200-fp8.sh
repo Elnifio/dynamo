@@ -72,6 +72,7 @@ if [ "$mode" = "prefill" ]; then
 
     # --enable-dp-attention \
     # --enable-dp-lm-head \
+    # --dp-size "$TOTAL_GPUS" \
 
     DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
     MC_TE_METRIC=true \
@@ -96,7 +97,6 @@ if [ "$mode" = "prefill" ]; then
         --nnodes "$TOTAL_NODES" \
         --node-rank "$RANK" \
         --tp-size "$TOTAL_GPUS" \
-        --dp-size "$TOTAL_GPUS" \
         --host 0.0.0.0 \
         --decode-log-interval 1000 \
         --max-running-requests 12288 \
@@ -125,6 +125,7 @@ elif [ "$mode" = "decode" ]; then
 
     # --enable-dp-attention \
     # --enable-dp-lm-head \
+    # --dp-size "$TOTAL_GPUS" \
 
     # GB200 dynamo decode command
     DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
@@ -152,7 +153,6 @@ elif [ "$mode" = "decode" ]; then
         --nnodes "$TOTAL_NODES" \
         --node-rank "$RANK" \
         --tp-size "$TOTAL_GPUS" \
-        --dp-size "$TOTAL_GPUS" \
         --host 0.0.0.0 \
         --decode-log-interval 1000 \
         --max-running-requests 36864 \
