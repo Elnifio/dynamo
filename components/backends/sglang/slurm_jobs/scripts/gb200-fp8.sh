@@ -87,9 +87,7 @@ if [ "$mode" = "prefill" ]; then
         --model-path /model/ \
         --skip-tokenizer-init \
         --trust-remote-code \
-        --disaggregation-mode prefill \
         --dist-init-addr "$HOST_IP:$PORT" \
-        --disaggregation-bootstrap-port 30001 \
         --nnodes "$TOTAL_NODES" \
         --node-rank "$RANK" \
         --tp-size "$TOTAL_GPUS" \
