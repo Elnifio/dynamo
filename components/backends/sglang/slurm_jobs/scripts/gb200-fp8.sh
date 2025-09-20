@@ -62,80 +62,31 @@ if [ -z "$USE_INIT_LOCATIONS" ]; then
     exit 1
 fi
 
-# Construct command based on mode
-if [ "$mode" = "decode" ]; then
-    # GB200 dynamo prefill command
-    set -x
-    # SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=2048 \
-
-    if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/prefill_dsr1-0528_in1000out1000_num40000.json"; fi
-
-    DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
-    MC_TE_METRIC=true \
-    SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 \
-    SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000 \
-    SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000 \
-    SGLANG_MOONCAKE_CUSTOM_MEM_POOL=True \
-    MC_FORCE_MNNVL=1 \
-    NCCL_MNNVL_ENABLE=1 \
-    NCCL_CUMEM_ENABLE=1 \
-    SGLANG_USE_MESSAGE_QUEUE_BROADCASTER=0 \
-    SGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=1 \
-    PYTHONUNBUFFERED=1 \
-    python3 -m dynamo.sglang.worker \
-        --served-model-name deepseek-ai/DeepSeek-R1 \
-        --model-path /model/ \
-        --skip-tokenizer-init \
-        --trust-remote-code \
-        --dist-init-addr "$HOST_IP:$PORT" \
-        --nnodes "$TOTAL_NODES" \
-        --node-rank "$RANK" \
-        --tp-size "$TOTAL_GPUS" \
-        --host 0.0.0.0 \
-        --decode-log-interval 1000 \
-        --max-running-requests 12288 \
-        --context-length 9600 \
-        --attention-backend cutlass_mla \
-        --watchdog-timeout 1000000 \
-        --stream-interval 50 \
-        --log-level debug ${command_suffix}
-
-elif [ "$mode" = "prefill" ]; then
-    set -x
-    command_suffix=""
-    if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/decode_dsr1-0528_loadgen_in1024out1024_num2000_2p12d.json"; fi
-
-    # GB200 dynamo decode command
-    DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
-    SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=512 \
-    MC_TE_METRIC=true \
-    SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 \
-    SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000 \
-    SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000 \
-    SGLANG_HACK_SEQ_BOOTSTRAP_ROOM=1 \
-    SGLANG_MOONCAKE_CUSTOM_MEM_POOL=True \
-    NCCL_MNNVL_ENABLE=1 \
-    MC_FORCE_MNNVL=1 \
-    NCCL_CUMEM_ENABLE=1 \
-    SGLANG_USE_MESSAGE_QUEUE_BROADCASTER=0 \
-    SGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=1 \
-    PYTHONUNBUFFERED=1 \
-    python3 -m dynamo.sglang.decode_worker \
-        --served-model-name deepseek-ai/DeepSeek-R1 \
-        --model-path /model/ \
-        --skip-tokenizer-init \
-        --trust-remote-code \
-        --disaggregation-mode decode \
-        --dist-init-addr "$HOST_IP:$PORT" \
-        --disaggregation-bootstrap-port 30001 \
-        --nnodes "$TOTAL_NODES" \
-        --node-rank "$RANK" \
-        --tp-size "$TOTAL_GPUS" \
-        --host 0.0.0.0 \
-        --decode-log-interval 1000 \
-        --context-length 9600 \
-        --attention-backend cutlass_mla \
-        --watchdog-timeout 1000000 \
-        --stream-interval 50 \
-        --mem-fraction-static 0.82 ${command_suffix}
-fi
+DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
+MC_TE_METRIC=true \
+SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 \
+SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000 \
+SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000 \
+SGLANG_MOONCAKE_CUSTOM_MEM_POOL=True \
+MC_FORCE_MNNVL=1 \
+NCCL_MNNVL_ENABLE=1 \
+NCCL_CUMEM_ENABLE=1 \
+SGLANG_USE_MESSAGE_QUEUE_BROADCASTER=0 \
+SGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=1 \
+PYTHONUNBUFFERED=1 \
+python3 -m sglang.launch_server \
+--tokenizer-path "/model/" \
+--trust-remote-code \
+--disable-radix-cache \
+--max-running-requests 512 \
+--chunked-prefill-size 32768 \
+--mem-fraction-static 0.7 \
+--cuda-graph-max-bs 512 \
+--max-prefill-tokens 32768 \
+--kv-cache-dtype fp8_e4m3 \
+--attention-backend trtllm_mla \
+--stream-interval 10 \
+--enable-flashinfer-trtllm-moe \
+--model-path="/model/" \
+--host 0.0.0.0 --port 8000 \
+--tensor-parallel-size=8 --data-parallel-size=1
