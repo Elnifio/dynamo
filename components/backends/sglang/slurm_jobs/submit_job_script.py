@@ -199,10 +199,10 @@ def main(input_args: list[str] | None = None):
     args = _parse_command_line_args(input_args)
 
     # Validation
-    if args.prefill_nodes % args.prefill_workers != 0:
-        raise ValueError(
-            f"Prefill nodes ({args.prefill_nodes}) must be divisible by prefill workers ({args.prefill_workers})"
-        )
+    # if args.prefill_nodes % args.prefill_workers != 0:
+    #     raise ValueError(
+    #         f"Prefill nodes ({args.prefill_nodes}) must be divisible by prefill workers ({args.prefill_workers})"
+    #     )
 
     # if args.decode_nodes % args.decode_workers != 0:
     #     raise ValueError(
