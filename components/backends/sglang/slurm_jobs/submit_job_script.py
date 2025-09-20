@@ -204,10 +204,10 @@ def main(input_args: list[str] | None = None):
             f"Prefill nodes ({args.prefill_nodes}) must be divisible by prefill workers ({args.prefill_workers})"
         )
 
-    if args.decode_nodes % args.decode_workers != 0:
-        raise ValueError(
-            f"Decode nodes ({args.decode_nodes}) must be divisible by decode workers ({args.decode_workers})"
-        )
+    # if args.decode_nodes % args.decode_workers != 0:
+    #     raise ValueError(
+    #         f"Decode nodes ({args.decode_nodes}) must be divisible by decode workers ({args.decode_workers})"
+    #     )
 
     # Validation for multiple frontends
     if args.enable_multiple_frontends:
