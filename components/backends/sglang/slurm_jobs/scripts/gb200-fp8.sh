@@ -97,6 +97,7 @@ if [ "$mode" = "prefill" ]; then
         --decode-log-interval 1000 \
         --max-running-requests 12288 \
         --context-length 9600 \
+        --attention-backend cutlass_mla \
         --watchdog-timeout 1000000 \
         --stream-interval 50 \
         --log-level debug ${command_suffix}
@@ -135,7 +136,7 @@ elif [ "$mode" = "decode" ]; then
         --host 0.0.0.0 \
         --decode-log-interval 1000 \
         --context-length 9600 \
-        --disable-radix-cache \
+        --attention-backend cutlass_mla \
         --watchdog-timeout 1000000 \
         --stream-interval 50 \
         --mem-fraction-static 0.82 ${command_suffix}
