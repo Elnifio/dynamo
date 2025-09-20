@@ -63,7 +63,7 @@ if [ -z "$USE_INIT_LOCATIONS" ]; then
 fi
 
 # Construct command based on mode
-if [ "$mode" = "prefill" ]; then
+if [ "$mode" = "decode" ]; then
     # GB200 dynamo prefill command
     set -x
     # SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=2048 \
@@ -116,7 +116,7 @@ if [ "$mode" = "prefill" ]; then
         --stream-interval 50 \
         --log-level debug ${command_suffix}
 
-elif [ "$mode" = "decode" ]; then
+elif [ "$mode" = "prefill" ]; then
     set -x
     command_suffix=""
     if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/decode_dsr1-0528_loadgen_in1024out1024_num2000_2p12d.json"; fi
