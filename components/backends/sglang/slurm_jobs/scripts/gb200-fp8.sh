@@ -101,7 +101,7 @@ if [ "$mode" = "prefill" ]; then
         --context-length 9600 \
         --disable-radix-cache \
         --enable-deepep-moe \
-        --deepep-mode normal \
+        --deepep-mode low_latency \
         --ep-dispatch-algorithm dynamic \
         --moe-dense-tp-size 1 \
         --enable-dp-lm-head \
