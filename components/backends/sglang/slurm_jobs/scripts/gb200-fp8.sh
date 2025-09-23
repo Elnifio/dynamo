@@ -72,6 +72,9 @@ if [ "$mode" = "prefill" ]; then
 
     export SGL_ENABLE_JIT_DEEPGEMM=false
     export SGLANG_ENABLE_FLASHINFER_GEMM=true
+    export SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000
+    export SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000
+    export SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000
     command=(
         python3 -m dynamo.sglang.worker
         --tokenizer-path "/model/" --model-path "/model/" --served-model-name deepseek-ai/DeepSeek-R1
@@ -104,6 +107,9 @@ elif [ "$mode" = "decode" ]; then
 
     export SGL_ENABLE_JIT_DEEPGEMM=false
     export SGLANG_ENABLE_FLASHINFER_GEMM=true
+    export SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000
+    export SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000
+    export SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000
     command=(
         python3 -m dynamo.sglang.worker
         --tokenizer-path "/model/" --model-path "/model/" --served-model-name deepseek-ai/DeepSeek-R1
@@ -126,6 +132,6 @@ elif [ "$mode" = "decode" ]; then
         --enable-flashinfer-trtllm-moe
         --scheduler-recv-interval 10
     )
-    
+
     ${command[@]}
 fi
