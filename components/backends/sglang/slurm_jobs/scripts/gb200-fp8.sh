@@ -70,35 +70,32 @@ if [ "$mode" = "decode" ]; then
 
     if [[ "${USE_INIT_LOCATIONS,,}" == "true" ]]; then command_suffix="--init-expert-location /configs/prefill_dsr1-0528_in1000out1000_num40000.json"; fi
 
-    DYN_SKIP_SGLANG_LOG_FORMATTING=1 \
-    MC_TE_METRIC=true \
-    SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 \
-    SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000 \
-    SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000 \
-    SGLANG_MOONCAKE_CUSTOM_MEM_POOL=True \
-    MC_FORCE_MNNVL=1 \
-    NCCL_MNNVL_ENABLE=1 \
-    NCCL_CUMEM_ENABLE=1 \
-    SGLANG_USE_MESSAGE_QUEUE_BROADCASTER=0 \
-    SGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=1 \
-    PYTHONUNBUFFERED=1 \
-    python3 -m dynamo.sglang.worker \
-        --served-model-name deepseek-ai/DeepSeek-R1 \
-        --model-path /model/ \
-        --skip-tokenizer-init \
-        --trust-remote-code \
-        --dist-init-addr "$HOST_IP:$PORT" \
-        --nnodes "$TOTAL_NODES" \
-        --node-rank "$RANK" \
-        --tp-size "$TOTAL_GPUS" \
-        --host 0.0.0.0 \
-        --decode-log-interval 1000 \
-        --max-running-requests 12288 \
-        --context-length 9600 \
-        --attention-backend cutlass_mla \
-        --watchdog-timeout 1000000 \
-        --stream-interval 50 \
-        --log-level debug ${command_suffix}
+    export SGL_ENABLE_JIT_DEEPGEMM=false
+    export SGLANG_ENABLE_FLASHINFER_GEMM=true
+    command=(
+        python3 -m dynamo.sglang.worker
+        --tokenizer-path "/model/" --model-path "/model/" --served-model-name deepseek-ai/DeepSeek-R1
+        --host 0.0.0.0 --port 8000
+        --dist-init-addr $HOST_IP:$PORT
+        --nnodes $TOTAL_NODES --node-rank $RANK
+        --tensor-parallel-size=$TOTAL_GPUS --data-parallel-size=1
+        --trust-remote-code --skip-tokenizer-init
+        --disable-radix-cache
+        --max-running-requests 512
+        --chunked-prefill-size 32768
+        --mem-fraction-static 0.7
+        --cuda-graph-max-bs 512
+        --max-prefill-tokens 32768
+        --kv-cache-dtype fp8_e4m3
+        --quantization fp8
+        --attention-backend trtllm_mla
+        --stream-interval 10
+        --enable-flashinfer-trtllm-moe
+        --scheduler-recv-interval 10
+        
+    )
+    
+    ${command[@]}
 
 elif [ "$mode" = "prefill" ]; then
     set -x
