@@ -238,14 +238,14 @@ def setup_env_vars_for_gpu_script(
     use_init_locations: bool = True,
 ):
     """Setup environment variables required by GPU scripts (h100.sh, gb200-fp8.sh, gb200-fp4.sh)"""
-    os.environ["HOST_IP"] = host_ip
+    os.environ["HOST_IP_MACHINE"] = host_ip
     os.environ["PORT"] = str(port)
     os.environ["TOTAL_GPUS"] = str(total_gpus)
     os.environ["RANK"] = str(local_rank)
     os.environ["TOTAL_NODES"] = str(total_nodes)
     os.environ["USE_INIT_LOCATIONS"] = str(use_init_locations)
 
-    logging.info(f"Set HOST_IP: {host_ip}")
+    logging.info(f"Set HOST_IP_MACHINE: {host_ip}")
     logging.info(f"Set PORT: {port}")
     logging.info(f"Set TOTAL_GPUS: {total_gpus}")
     logging.info(f"Set RANK: {local_rank}")

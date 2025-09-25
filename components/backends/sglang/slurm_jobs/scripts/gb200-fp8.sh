@@ -32,8 +32,8 @@ echo "Mode: $mode"
 echo "Command: dynamo"
 
 # Check if required environment variables are set
-if [ -z "$HOST_IP" ]; then
-    echo "Error: HOST_IP environment variable is not set"
+if [ -z "$HOST_IP_MACHINE" ]; then
+    echo "Error: HOST_IP_MACHINE environment variable is not set"
     exit 1
 fi
 
@@ -88,7 +88,7 @@ if [ "$mode" = "prefill" ]; then
         --skip-tokenizer-init \
         --trust-remote-code \
         --disaggregation-mode prefill \
-        --dist-init-addr "$HOST_IP:$PORT" \
+        --dist-init-addr "$HOST_IP_MACHINE:$PORT" \
         --disaggregation-bootstrap-port 30001 \
         --nnodes "$TOTAL_NODES" \
         --node-rank "$RANK" \
@@ -100,7 +100,8 @@ if [ "$mode" = "prefill" ]; then
         --max-running-requests 12288 \
         --context-length 9600 \
         --disable-radix-cache \
-        --enable-deepep-moe \
+        --load-balance-method round_robin \
+        --moe-a2a-backend deepep \
         --deepep-mode normal \
         --ep-dispatch-algorithm dynamic \
         --moe-dense-tp-size 1 \
@@ -143,7 +144,7 @@ elif [ "$mode" = "decode" ]; then
         --skip-tokenizer-init \
         --trust-remote-code \
         --disaggregation-mode decode \
-        --dist-init-addr "$HOST_IP:$PORT" \
+        --dist-init-addr "$HOST_IP_MACHINE:$PORT" \
         --disaggregation-bootstrap-port 30001 \
         --nnodes "$TOTAL_NODES" \
         --node-rank "$RANK" \
@@ -155,7 +156,8 @@ elif [ "$mode" = "decode" ]; then
         --max-running-requests 36864 \
         --context-length 9600 \
         --disable-radix-cache \
-        --enable-deepep-moe \
+        --moe-a2a-backend deepep \
+        --prefill-round-robin-balance \
         --deepep-mode low_latency \
         --moe-dense-tp-size 1 \
         --enable-dp-lm-head \
